@@ -1,5 +1,5 @@
 <?php 
-require_once('User Authentication/auth.php');
+require_once('../User Authentication/auth.php');
 session_start();
 if(isLogged()){
     //header('location: index1.php');
@@ -30,11 +30,12 @@ if(isLogged()){
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item"><a class="nav-link active text-light btn btn-dark" aria-current="page" href="index.php">Home</a></li>
-                        <li class="nav-item"><a class="nav-link text-light" href="#!">About</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="#!">My Reviews</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="#!">Create</a></li>
                     </ul>
                     <form class="d-flex mb-lg-0 ms-lg-4">
                         <button class="btn btn-dark" type="submit">
-                            <i class="bi-person-circle me-1 text-light"></i><a href="User Authentication/signin.php" style="text-decoration: none;" class="text-light">&nbsp;Sign In</a>
+                            <i class="bi-person-circle me-1 text-light"></i><a href="User Authentication/signout.php" style="text-decoration: none;" class="text-light">&nbsp;Sign Out</a>
                         </button>
                     </form>
                 </div>
@@ -76,7 +77,7 @@ if(isLogged()){
                             </div>
                             <!-- View Review-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center"><a class="btn btn-dark btn-outline-black mt-auto" href="entityHorror/detail.php">View Review</a></div>
+                                <div class="text-center"><a class="btn btn-dark btn-outline-black mt-auto" href="detail.php">View Review</a></div>
                             </div>
                             <!-- Username badge-->
                             <div class="badge bg-dark text-light position-absolute" style="top: 0.5rem; left: 0.5rem">User Name</div>
