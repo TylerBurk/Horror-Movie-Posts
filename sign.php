@@ -1,17 +1,9 @@
-<?php 
-require_once('functions.php');
-require_once('settings.php');
-require_once('authentication/auth.php');
-$userData=file_get_contents(APP_PATH.'/data/posts.json.php');
-$userData=json_decode($userData, true);
-$index=0;
-?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title>Horror Heads</title>
+        <title>Sign In</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Bootstrap icons-->
@@ -29,26 +21,39 @@ $index=0;
                 <a class="navbar-brand text-light" href="index.php">Horror Heads</a>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active text-light btn btn-dark" aria-current="page" href="index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" aria-current="page" href="index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="#!">My Reviews</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="#!">Create</a></li>
                     </ul>
-                    <div class="d-flex mb-lg-0 ms-lg-4">
-                            <a href="authentication/signin.php" class="btn btn-dark"><i class="bi-person-circle me-1 text-light"></i>&nbsp;Sign In</a>
-                    </div>
                 </div>
             </div>
         </nav>
-        <!-- Header-->
-        <header class="bg-image py-5" style="background-image: url('https://d39l2hkdp2esp1.cloudfront.net/img/photo/276765/276765_00_2x.jpg?20230817094614')">
-            <div class="container px-4 px-lg-5 my-5">
-                <div class="text-center text-light">
-                    <h1 class="display-4 fw-bolder">Welcome to Horror Heads!</h1>
-                    <p class="lead fw-normal text-light mb-0">Haunt, Review, Discover</p>
-                </div>
-            </div>
-        </header>
         <!-- Section-->
         <section class="py-5">
             <div class="container px-4 px-lg-5 mt-5">
+            <?php if(strlen($error)>0) echo '<span style="color:#f30">'.$error.'</span>'; ?>
+                <form class="col-lg-6 offset-lg-3" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-light">Email address</label>
+                        <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+                        <div id="emailHelp" class="form-text text-light">We'll never share your email with anyone else.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label text-light">Password</label>
+                        <input id="password" type="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label text-light">Confirm Password</label>
+                        <input type="confirmPassword" name="confirmPassword" id="confirmPassword" class="form-control"  required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                    <br />`
+                    <div class="mb-3 text-light">
+                        New User?&nbsp;<a href="sign.php">Sign Up</a>
+                    </div>
+
+                    
+                </form>
             </div>
         </section>
         <!-- Footer-->
