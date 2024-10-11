@@ -1,40 +1,121 @@
 <?php 
-session_start();
-function displaySignUpForm() { ?>
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="row gx-4 gx-lg-5 align-items-center">
-            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="https://variety.com/wp-content/uploads/2024/07/Terrifier-poster.jpeg?w=724" alt="..." /></div>
-            <div class="col-md-6">
-                <div class="small mb-1 text-light"><?php echo $_SESSION['username'] ?></div>
-                <h1 class="display-5 fw-bolder text-light">Spooky Movie Name</h1>
-                <p class="lead text-light">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium at dolorem quidem modi. Nam sequi consequatur obcaecati excepturi alias magni, accusamus eius blanditiis delectus ipsam minima ea iste laborum vero?</p>
-                <div class="d-flex text-warning">
-                <div class="bi-star-fill"></div>
-                    <div class="bi-star-fill"></div>
-                    <div class="bi-star-fill"></div>
-                    <div class="bi-star-half"></div>
-                    <div class="bi-star"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php }
+require_once('authentication/auth.php');
 
-function displayLoginForm() { ?>
-    <form class="col-lg-6 offset-lg-3" method="POST" action="">
-        <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label text-light">Email address</label>
-            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
-            <div id="emailHelp" class="form-text text-light">We'll never share your email with anyone else.</div>
-        </div>
-        <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label text-light">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1">
-        </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label text-light" for="exampleCheck1">Correct Password</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-<?php } ?>
+function signup($username, $email, $password, $confirmPassword) {
+    //LOGIC/CONTROLLER
+    if(count($_POST)> 0){
+        $error='';
+        $error=checkFields();
+        
+        if($password != $confirmPassword) $error='Passwords must match';
+    
+        if(strlen($error)==0){
+            $fp=fopen('../data/users.csv.php','r');
+            while(!feof($fp)){
+                $line=fgets($fp);
+                $line=explode(';',$line);
+                if(count($line)==3 && $email==$line[1] && $username==$line[0]){
+                    $error='This email is already registered';
+                    break;
+                } 
+            }
+            fclose($fp);
+            if(strlen($error)==0){
+                //open csv file in append mode
+                $fp=fopen('../data/users.csv.php','a+');
+                //write new credentials
+                fputs($fp,$username.';'.$email.';'.password_hash($password,PASSWORD_DEFAULT).PHP_EOL);
+                //close the file
+                fclose($fp);
+                header('location: signin.php');
+                die();
+            }
+        }
+        return $error;
+    }
+}
+
+function signin($email,$password) {
+    //LOGIC/CONTROLLER
+    if(count($_POST)> 0){
+        $error='';
+        $error=checkFields();
+        if(strlen($error)==0){
+            $fp=fopen('../data/users.csv.php','r');
+            while(!feof($fp)){
+                $line=fgets($fp);
+                $line=explode(';',$line);
+                if(count($line)==3 && $email==$line[1] && password_verify($password,trim($line[2]))){
+                    $_SESSION['username']=$line[0];
+                    header('location: ../entityHorror/index.php');
+                    die();
+                } 
+            }
+            fclose($fp);
+            $error='Email or Password is incorrect';
+        }
+        return $error;
+    }
+}
+
+function displayStars($number) {
+    if($number % 2 == 0) {
+        $numLeft=5;
+        $number=$number/2;
+        $numLeft=$numLeft-$number;
+        for($i=0;$i<$number;$i++) {
+            ?> <div class="bi-star-fill"></div> <?php
+        }
+        for($i=0;$i<$numLeft;$i++) {
+            ?> <div class="bi-star"></div> <?php
+        }
+    } else {
+        $numLeft=4;
+        $number=$number-1;
+        $number=$number/2;
+        $numLeft=$numLeft-$number;
+        for($i=0;$i<$number;$i++) {
+            ?> <div class="bi-star-fill"></div> <?php
+        }
+        ?> <div class="bi-star-half"></div> <?php
+        for($i=0;$i<$numLeft;$i++) {
+            ?> <div class="bi-star"></div> <?php
+        }
+    }
+}
+
+function displayCards($user, $movieName, $descShort, $rating, $movieImage, $index)
+                  { $newIndex=$index; ?>
+                    <div class="col mb-5">
+                        <div class="card h-100 border-black">
+                            <!-- Review image-->
+                            <img class="card-img-top" src="<?= APP_URL.$movieImage ?>" alt="Movie Cover" style="height:350px;"/>
+                            <!-- Review details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Review name-->
+                                    <h5 class="fw-bolder text-dark"><?= $movieName ?></h5>
+                                    <!-- Review reviews-->
+                                    <div class="d-flex justify-content-center small text-warning mb-2">
+                                        <?php displayStars($rating) ?>
+                                    </div>
+                                    <!-- Review description-->
+                                    <span class="text-dark"><?= $descShort ?></span>
+                                </div>
+                            </div>
+                            <!-- View Review-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-dark btn-outline-black mt-auto" href="detail.php?index=<?= $newIndex ?>">View Review</a></div>
+                            </div>
+                            <!-- Username badge-->
+                            <div class="badge bg-dark text-light position-absolute" style="top: 0.5rem; left: 0.5rem"><?= $user ?></div>
+                        </div>
+                    </div>               
+<?php $newIndex++; } 
+
+function displayRating($rating, $i) {?>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="rating" id="rating" value="<?= $i ?>" <?php if($i==$rating) echo 'checked' ?>>
+                            <label class="form-check-label text-light" for="rating"><?= $i ?></label>
+                        </div>
+<?php }
